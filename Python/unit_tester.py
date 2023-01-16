@@ -125,5 +125,11 @@ class TestTime(unittest.TestCase):
         at = astro_time.Astro_Time()
 
         self.assertEqual(at.LocalTimeToUniversalTime(2013, 7, 1, 3, 37, 0, 1, 4), (2013, 6, 30, 22, 37, 0))
+
+    def test_UniversalTimeToLocalTime(self):
+        at = astro_time.Astro_Time()
+
+        self.assertEqual(at.UniversalTimeToLocalTime(2013, 6, 30, 22, 37, 0, 1, 4), (2013, 7, 1, 3, 37, 0))
+
 if __name__ == '__main__':
     unittest.main()

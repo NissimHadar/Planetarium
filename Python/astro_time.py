@@ -153,15 +153,29 @@ class Astro_Time:
         return hour, minute, second
 
     # dayLightSavings - 1 for daylight savings, else 0
-    def LocalTimeToUniversalTime(self, year, month, day, hours, minutes, seconds, daylight_savings, zone_correction):
-        local_civil_time = self.HMSToDec(hours, minutes, seconds)
+    def LocalTimeToUniversalTime(self, year, month, day, hour, minute, second, daylight_savings, zone_correction):
+        local_civil_time = self.HMSToDec(hour, minute, second)
         universal_time = local_civil_time - daylight_savings - zone_correction
 
         Julian_date = self.CalendarDateToJulianDate(year, month, universal_time / 24 + day)
         Greenwich_year, Greenwich_month, Greenwich_day_fraction = self.JulianDateToCalendarDate(Julian_date)
 
         Greenwich_day = math.trunc(Greenwich_day_fraction)
-        decimal_time = 24 * (Greenwich_day_fraction - Greenwich_day)
+        decimal_time  = 24 * (Greenwich_day_fraction - Greenwich_day)
         hour, minute, second = self.DecToHMS(decimal_time)
 
         return Greenwich_year, Greenwich_month, Greenwich_day, hour, minute, second
+
+    def UniversalTimeToLocalTime(self, year, month, day, hour, minute, second, daylight_savings, zone_correction):
+        universal_time = self.HMSToDec(hour, minute, second)
+        zone_time      = universal_time + zone_correction
+        local_time     = zone_time + daylight_savings
+        Julian_day     = self.CalendarDateToJulianDate(year, month, day) + local_time / 24
+
+        local_year, local_month, local_day_fraction = self.JulianDateToCalendarDate(Julian_day)
+        local_day = math.trunc(local_day_fraction)
+        
+        local_time = 24 * (local_day_fraction - local_day)
+        local_hour, local_minute, local_second = self.DecToHMS(local_time)
+
+        return local_year, local_month, local_day, local_hour, local_minute, local_second
