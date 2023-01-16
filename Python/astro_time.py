@@ -5,7 +5,7 @@ class Astro_Time:
         #                  Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
         self.days_normal = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         self.days_leap   = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-        
+
     # Based on the method in Butcher's Ecclesiastical Calendar (valid from 1583)
     def DateOfEaster(self, year):
         if year < 1583:
@@ -138,9 +138,9 @@ class Astro_Time:
         minute = math.trunc(hour_fraction * 60)
         minute_fraction = hour_fraction - minute / 60
 
-        second = math.trunc(minute_fraction * 3600 + 0.5)
-        if second >= 60:
-            second -= 60
+        second = minute_fraction * 3600
+        if second >= 59.99:
+            second  = 0.0
             minute += 1
 
         if minute >= 60:
@@ -179,3 +179,18 @@ class Astro_Time:
         local_hour, local_minute, local_second = self.DecToHMS(local_time)
 
         return local_year, local_month, local_day, local_hour, local_minute, local_second
+
+    def UniversalTimeToGreenwichSiderealTime(self, Greenwich_year, Greenwich_month, Greenwich_day, hour, minute, second):
+        Julian_date = self.CalendarDateToJulianDate(Greenwich_year, Greenwich_month, Greenwich_day)
+        s = Julian_date - 2451545
+        t = s / 36525
+
+        t0 = (6.697374558 + (2400.051336 * t) + (0.000025862 * t * t)) % 24
+
+        universal_time = self.HMSToDec(hour, minute, second)
+        a = universal_time * 1.002737909
+        Greenwich_sidereal_time = (t0 + a) % 24
+
+        Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second = self.DecToHMS(Greenwich_sidereal_time)
+
+        return Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second

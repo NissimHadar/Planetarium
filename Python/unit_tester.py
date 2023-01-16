@@ -3,10 +3,19 @@ import unittest
 import astro_time
 
 class TestTime(unittest.TestCase):
+
+    def assertTupleAlmostEqual(self, a, b):
+        if len(a) != len(b):
+            return False
+
+        for i in range(len(a)):
+            self.assertAlmostEqual(a[i], b[i], 2)
+
     def test_DateOfEaster(self):
         at = astro_time.Astro_Time()
 
         self.assertEqual(at.DateOfEaster(1580), (-1, -1))
+
         self.assertEqual(at.DateOfEaster(2009), (4, 12))
         self.assertEqual(at.DateOfEaster(2012), (4,  8))
         self.assertEqual(at.DateOfEaster(2023), (4,  9))
@@ -113,23 +122,28 @@ class TestTime(unittest.TestCase):
     def test_DecToHMS(self):
         at = astro_time.Astro_Time()
 
-        self.assertEqual(at.DecToHMS(11.5),               (11, 30,  0))
-        self.assertEqual(at.DecToHMS(19.524166666666666), (19, 31, 27))
-
-        self.assertEqual(at.DecToHMS(at.HMSToDec( 1,  2,  3)), ( 1,  2,  3))
-        self.assertEqual(at.DecToHMS(at.HMSToDec( 4,  6,  9)), ( 4,  6,  9))
-        self.assertEqual(at.DecToHMS(at.HMSToDec( 7, 12, 33)), ( 7, 12, 33))
-        self.assertEqual(at.DecToHMS(at.HMSToDec(16, 45, 45)), (16, 45, 45))
+        self.assertTupleAlmostEqual(at.DecToHMS(11.5),               (11, 30,  0))
+        self.assertTupleAlmostEqual(at.DecToHMS(19.524166666666666), (19, 31, 27))
+        self.assertTupleAlmostEqual(at.DecToHMS(at.HMSToDec( 1,  2,  3)), ( 1,  2,  3))
+        self.assertTupleAlmostEqual(at.DecToHMS(at.HMSToDec( 4,  6,  9)), ( 4,  6,  9))
+        self.assertTupleAlmostEqual(at.DecToHMS(at.HMSToDec( 7, 12, 33)), ( 7, 12, 33))
+        self.assertTupleAlmostEqual(at.DecToHMS(at.HMSToDec(16, 45, 45)), (16, 45, 45))
 
     def test_LocalTimeToUniversalTime(self):
         at = astro_time.Astro_Time()
 
-        self.assertEqual(at.LocalTimeToUniversalTime(2013, 7, 1, 3, 37, 0, 1, 4), (2013, 6, 30, 22, 37, 0))
+        self.assertTupleAlmostEqual(at.LocalTimeToUniversalTime(2013, 7, 1, 3, 37, 0, 1, 4), (2013, 6, 30, 22, 37, 0))
 
     def test_UniversalTimeToLocalTime(self):
         at = astro_time.Astro_Time()
 
-        self.assertEqual(at.UniversalTimeToLocalTime(2013, 6, 30, 22, 37, 0, 1, 4), (2013, 7, 1, 3, 37, 0))
+        self.assertTupleAlmostEqual(at.UniversalTimeToLocalTime(2013, 6, 30, 22, 37, 0, 1, 4), (2013, 7, 1, 3, 37, 0))
+
+
+    def test_UniversalTimeToGreenwichSiderealTime(self):
+        at = astro_time.Astro_Time()
+
+        self.assertTupleAlmostEqual(at.UniversalTimeToGreenwichSiderealTime(1980, 4, 22, 14, 36, 51.67), (4, 40, 5.23))
 
 if __name__ == '__main__':
     unittest.main()
