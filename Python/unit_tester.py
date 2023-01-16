@@ -86,15 +86,16 @@ class TestTime(unittest.TestCase):
     def test_CalendarDateToJulianDate(self):
         at = astro_time.Astro_Time()
 
-        self.assertEqual(at.CalendarDateToJulianDate(2009, 6, 19.75), 2455002.25)
+        self.assertEqual(at.CalendarDateToJulianDate(2009, 6, 19.75),           2455002.25)
+        self.assertEqual(at.CalendarDateToJulianDate(2013, 1,  0.02083333333 ), 2456292.5208333335)
 
     def test_julianDateToCalendarDay(self):
         at = astro_time.Astro_Time()
 
-        self.assertEqual(at.julianDateToCalendarDay(2455002.25), (2009, 6, 19.75))
+        self.assertEqual(at.JulianDateToCalendarDate(2455002.25), (2009, 6, 19.75))
 
-        self.assertEqual(at.julianDateToCalendarDay(at.CalendarDateToJulianDate(2030,  4, 27.5 )), (2030,  4, 27.5 ))
-        self.assertEqual(at.julianDateToCalendarDay(at.CalendarDateToJulianDate(1920,  5, 23.25)), (1920,  5, 23.25))
+        self.assertEqual(at.JulianDateToCalendarDate(at.CalendarDateToJulianDate(2030,  4, 27.5 )), (2030,  4, 27.5 ))
+        self.assertEqual(at.JulianDateToCalendarDate(at.CalendarDateToJulianDate(1920,  5, 23.25)), (1920,  5, 23.25))
 
     def test_DayOfWeek(self):
         at = astro_time.Astro_Time()
@@ -119,6 +120,10 @@ class TestTime(unittest.TestCase):
         self.assertEqual(at.DecToHMS(at.HMSToDec( 4,  6,  9)), ( 4,  6,  9))
         self.assertEqual(at.DecToHMS(at.HMSToDec( 7, 12, 33)), ( 7, 12, 33))
         self.assertEqual(at.DecToHMS(at.HMSToDec(16, 45, 45)), (16, 45, 45))
-        
+
+    def test_LocalTimeToUniversalTime(self):
+        at = astro_time.Astro_Time()
+
+        self.assertEqual(at.LocalTimeToUniversalTime(2013, 7, 1, 3, 37, 0, 1, 4), (2013, 6, 30, 22, 37, 0))
 if __name__ == '__main__':
     unittest.main()

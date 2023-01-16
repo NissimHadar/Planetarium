@@ -64,6 +64,11 @@ class Astro_Time:
 
         return days + day
 
+    # The Julian day number (JDN) is the integer assigned to a whole solar day in the Julian day count starting from noon 
+    # Universal Time, with Julian day number 0 assigned to the day starting at noon on Monday, January 1, 4713 BC, 
+    # proleptic Julian calendar (November 24, 4714 BC, in the proleptic Gregorian calendar)
+    # The Julian date (JD) of any instant is the Julian day number plus the fraction of a day since the preceding noon in Universal Time. 
+    # Julian dates are expressed as a Julian day number with a decimal fraction added.
     def CalendarDateToJulianDate(self, year, month, day):
         if month < 3:
             Y = year - 1
@@ -87,7 +92,7 @@ class Astro_Time:
         
         return B + C + D + day + 1720994.5
 
-    def julianDateToCalendarDay(self, julianDate):
+    def JulianDateToCalendarDate(self, julianDate):
         I = math.trunc(julianDate + 0.5)
         F = julianDate + 0.5 - I
   
@@ -134,5 +139,29 @@ class Astro_Time:
         minute_fraction = hour_fraction - minute / 60
 
         second = math.trunc(minute_fraction * 3600 + 0.5)
+        if second >= 60:
+            second -= 60
+            minute += 1
 
+        if minute >= 60:
+            minute -= 60
+            hour += 1
+
+        if hour >= 24:
+            hour -= 24
+            
         return hour, minute, second
+
+    # dayLightSavings - 1 for daylight savings, else 0
+    def LocalTimeToUniversalTime(self, year, month, day, hours, minutes, seconds, daylight_savings, zone_correction):
+        local_civil_time = self.HMSToDec(hours, minutes, seconds)
+        universal_time = local_civil_time - daylight_savings - zone_correction
+
+        Julian_date = self.CalendarDateToJulianDate(year, month, universal_time / 24 + day)
+        Greenwich_year, Greenwich_month, Greenwich_day_fraction = self.JulianDateToCalendarDate(Julian_date)
+
+        Greenwich_day = math.trunc(Greenwich_day_fraction)
+        decimal_time = 24 * (Greenwich_day_fraction - Greenwich_day)
+        hour, minute, second = self.DecToHMS(decimal_time)
+
+        return Greenwich_year, Greenwich_month, Greenwich_day, hour, minute, second
