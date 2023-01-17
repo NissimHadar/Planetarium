@@ -180,17 +180,36 @@ class Astro_Time:
 
         return local_year, local_month, local_day, local_hour, local_minute, local_second
 
-    def UniversalTimeToGreenwichSiderealTime(self, Greenwich_year, Greenwich_month, Greenwich_day, hour, minute, second):
-        Julian_date = self.CalendarDateToJulianDate(Greenwich_year, Greenwich_month, Greenwich_day)
+    def UniversalTimeToGreenwichSiderealTime(self, ut_year, ut_month, ut_day, ut_hour, ut_minute, ut_second):
+        Julian_date = self.CalendarDateToJulianDate(ut_year,ut_month, ut_day)
         s = Julian_date - 2451545
         t = s / 36525
 
         t0 = (6.697374558 + (2400.051336 * t) + (0.000025862 * t * t)) % 24
 
-        universal_time = self.HMSToDec(hour, minute, second)
+        universal_time = self.HMSToDec(ut_hour, ut_minute, ut_second)
         a = universal_time * 1.002737909
         Greenwich_sidereal_time = (t0 + a) % 24
 
         Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second = self.DecToHMS(Greenwich_sidereal_time)
 
         return Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second
+
+    def GreenwichSiderealTimeToUniversalTime(self, Greenwich_sidereal_time_year, Greenwich_sidereal_time_month, Greenwich_sidereal_time_day, Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second):
+        Julian_date = self.CalendarDateToJulianDate(Greenwich_sidereal_time_year, Greenwich_sidereal_time_month, Greenwich_sidereal_time_day)
+        s = Julian_date - 2451545
+        t = s / 36525
+
+        t0 = (6.697374558 + (2400.051336 * t) + (0.000025862 * t * t)) % 24
+
+        Greenwich_sidereal_time_hour_fraction = self.HMSToDec(Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second)
+        a = Greenwich_sidereal_time_hour_fraction - t0
+        b = a % 24
+
+        universal_time = b * 0.9972695663
+        universal_time_hours, universal_time_minutes, universal_time_seconds = self.DecToHMS(universal_time)
+
+        # universal_time must be less than 3m 56s
+        ok = universal_time >= 0.065574
+
+        return ok, universal_time_hours, universal_time_minutes, universal_time_seconds
