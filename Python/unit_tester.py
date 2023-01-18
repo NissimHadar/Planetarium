@@ -1,9 +1,9 @@
 import unittest
 
 import astro_time
+import astro_coordinates
 
-class TestTime(unittest.TestCase):
-
+class Common(unittest.TestCase):
     def assertTupleAlmostEqual(self, a, b):
         if len(a) != len(b):
             return False
@@ -11,6 +11,7 @@ class TestTime(unittest.TestCase):
         for i in range(len(a)):
             self.assertAlmostEqual(a[i], b[i], 2)
 
+class TestTime(Common):
     def test_DateOfEaster(self):
         at = astro_time.Astro_Time()
 
@@ -158,7 +159,20 @@ class TestTime(unittest.TestCase):
     def test_LocalSiderealTimeToGreenwichSiderealTime(self):
         at = astro_time.Astro_Time()
 
-        self.assertTupleAlmostEqual(at.LocalSiderealTimeToGreenwichSiderealTime(0, 40, 5.23, -64), (4, 24, 5.23))
+        self.assertTupleAlmostEqual(at.LocalSiderealTimeToGreenwichSiderealTime(0, 24, 5.23, -64), (4, 40, 5.23))
+
+class TestCoordinates(Common):
+    def test_DMSToDec(self):
+        ac = astro_coordinates.Astro_Coordinates()
+
+        self.assertEqual(ac.DMSToDec(11, 30,  0), 11.5)
+        self.assertEqual(ac.DMSToDec(19, 31, 27), 19.524166666666666)
+
+    def test_DecToDMS(self):
+        ac = astro_coordinates.Astro_Coordinates()
+
+        self.assertTupleAlmostEqual(ac.DecToDMS(11.5), (11, 30,  0))
+        self.assertTupleAlmostEqual(ac.DecToDMS(182.5241667), (182, 31, 27))
 
 if __name__ == '__main__':
     unittest.main()
