@@ -150,5 +150,10 @@ class TestTime(unittest.TestCase):
 
         self.assertTupleAlmostEqual(at.GreenwichSiderealTimeToUniversalTime(1980, 4, 22, 4, 40, 5.23), (14, 36, 51.67))
 
+    def test_GreenwichSiderealTimeToLocalSiderealTime(self):
+        at = astro_time.Astro_Time()
+
+        self.assertTupleAlmostEqual(at.GreenwichSiderealTimeToLocalSiderealTime(4, 40, 5.23, -64), (0, 24, 5.23))
+
 if __name__ == '__main__':
     unittest.main()
