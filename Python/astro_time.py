@@ -222,3 +222,12 @@ class Astro_Time:
         local_sidereal_time_hour_fraction = (Greenwich_sidereal_time_hour_fraction + offset) % 24
 
         return self.DecToHMS(local_sidereal_time_hour_fraction)
+        
+    def LocalSiderealTimeToGreenwichSiderealTime(self, local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second, longitude):
+        local_sidereal_time_hour_fraction = self.HMSToDec(local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second)
+
+        offset = longitude / 15
+
+        Greenwich_sidereal_time_hour_fraction = (local_sidereal_time_hour_fraction - offset) % 24
+
+        return self.DecToHMS(Greenwich_sidereal_time_hour_fraction)
