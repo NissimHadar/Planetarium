@@ -174,5 +174,10 @@ class TestCoordinates(Common):
         self.assertTupleAlmostEqual(ac.DecToDMS(11.5), (11, 30,  0))
         self.assertTupleAlmostEqual(ac.DecToDMS(182.5241667), (182, 31, 27))
 
+    def test_RightAscensionToHourAngle(self):
+        ac = astro_coordinates.Astro_Coordinates()
+
+        self.assertTupleAlmostEqual(ac.RightAscensionToHourAngle(18, 32, 21, 1980, 4, 22, 14, 36, 51.67, 0, -4, -64), (9, 52, 23.6555))
+
 if __name__ == '__main__':
     unittest.main()
