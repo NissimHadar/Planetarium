@@ -56,3 +56,30 @@ class Astro_Coordinates:
         hour_angle = (local_sidereal_time_fraction - right_ascension) % 24
 
         return at.DecToHMS(hour_angle)
+
+    def HourAngleToRightAscension(self, \
+        hour_angle_hours, hour_angle_minutes, hour_angle_seconds, \
+        local_year, local_month, local_day, local_hour, local_minute, local_second, daylight_savings, zone_correction, \
+        longitude
+        ):
+
+        at = astro_time.Astro_Time()
+
+        universal_time          = at.LocalTimeToUniversalTime(local_year, local_month, local_day, local_hour, local_minute, local_second, daylight_savings, zone_correction)
+        universal_time_fraction = at.HMSToDec(universal_time[3], universal_time[4], universal_time[5])
+
+        Greenwich_year  = universal_time[0]
+        Greenwich_month = universal_time[1]
+        Greenwich_day   = universal_time[2]
+
+        Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second = at.UniversalTimeToGreenwichSiderealTime(Greenwich_year, Greenwich_month, Greenwich_day, universal_time_fraction, 0, 0)
+        Greenwich_sidereal_time_fraction = at.HMSToDec(Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second)
+
+        local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second = at.GreenwichSiderealTimeToLocalSiderealTime(Greenwich_sidereal_time_fraction, 0, 0, longitude)
+        local_sidereal_time_fraction = at.HMSToDec(local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second)
+
+        hour_angle_fractions = at.HMSToDec(hour_angle_hours, hour_angle_minutes, hour_angle_seconds)
+
+        right_ascension = (local_sidereal_time_fraction - hour_angle_fractions) % 24
+
+        return at.DecToHMS(right_ascension)
