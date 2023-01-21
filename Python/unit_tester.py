@@ -184,5 +184,26 @@ class TestCoordinates(Common):
 
         self.assertTupleAlmostEqual(ac.HourAngleToRightAscension(9, 52, 23.6555, 1980, 4, 22, 14, 36, 51.67, 0, -4, -64), (18, 32, 21))
 
+    def test_ToFromVector(self):
+        ac = astro_coordinates.Astro_Coordinates()
+
+        self.assertTupleAlmostEqual(ac.To_Vector(  0,  0), ( 1,      0,     0    ))
+        self.assertTupleAlmostEqual(ac.To_Vector( 45,  0), ( 0.707,  0.707, 0    ))
+        self.assertTupleAlmostEqual(ac.To_Vector( 90,  0), ( 0,      1,     0    ))
+        self.assertTupleAlmostEqual(ac.To_Vector(135,  0), (-0.707,  0.707, 0    ))
+        self.assertTupleAlmostEqual(ac.To_Vector(180,  0), (-1,      0,     0    ))
+        self.assertTupleAlmostEqual(ac.To_Vector(225,  0), (-0.707, -0.707, 0    ))
+        self.assertTupleAlmostEqual(ac.To_Vector(270,  0), ( 0,     -1,     0    ))
+        self.assertTupleAlmostEqual(ac.To_Vector(360,  0), ( 1,      0,     0    ))
+
+        self.assertTupleAlmostEqual(ac.To_Vector( 0,  45), (  0.707, 0,     0.707))
+        self.assertTupleAlmostEqual(ac.To_Vector( 0,  90), (  0,     0,     1    ))
+        self.assertTupleAlmostEqual(ac.To_Vector( 0, 135), ( -0.707, 0,     0.707))
+        self.assertTupleAlmostEqual(ac.To_Vector( 0, 180), (  -1,    0,     0    ))
+        self.assertTupleAlmostEqual(ac.To_Vector( 0, 225), ( -0.707, 0,    -0.707))
+        self.assertTupleAlmostEqual(ac.To_Vector( 0, 270), (  0,     0,    -1    ))
+        self.assertTupleAlmostEqual(ac.To_Vector( 0, 315), (  0.707, 0,    -0.707))
+        self.assertTupleAlmostEqual(ac.To_Vector( 0, 360), ( 1,      0,     0    ))
+
 if __name__ == '__main__':
     unittest.main()

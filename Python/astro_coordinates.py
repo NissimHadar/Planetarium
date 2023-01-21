@@ -83,3 +83,79 @@ class Astro_Coordinates:
         right_ascension = (local_sidereal_time_fraction - hour_angle_fractions) % 24
 
         return at.DecToHMS(right_ascension)
+    
+    # Coordinate systems
+    #   All in degrees
+    #
+    #   horizon
+    #       azimuth             - east from north (alpha)
+    #       altitude            - up from horizon (A)
+    #
+    #   equatorial
+    #       right ascension     - east from the first point of Aries (alpha)
+    #       hour angle          - west from south (H)
+    #       declination         - up from the equator (delta)
+    #
+    #   ecliptic
+    #       ecliptic longitude  - east from the first point of Aries (gamma)
+    #       ecliptic latitude   - (beta)
+    #
+    #   galactic
+    #       galactic longitude  - galactic centre to sun, (l)
+    #       galactic latitude   - (b)
+    #
+    #   phi     - geographical latitude
+    #   st      - local sidereal time
+    #   epsilon - obliquity of the ecliptic
+
+    # transforms to alpha, A to H, delta
+    def Equatorial_T_Horizon(self, phi):
+        a = math.radians(phi)
+        return np.array([[-math.sin(a),  0, math.cos(a)], \
+                         [           0, -1,           0], \
+                         [ math.cos(a),   0, math.sin(a)]])
+
+    # transforms to H, delta to alpha, A
+    def Horizon_T_Equatorial(self, phi):
+        a = math.radians(phi)
+        return np.array([[-math.sin(a),  0, math.cos(a)], \
+                         [           0, -1,           0], \
+                         [ math.cos(a),  0, math.sin(a)]])
+
+    # transforms to alpha, delta to H, delta
+    def Equatorial_T_Horizon(self, ST):
+        a = math.radians(ST)
+        return np.array([[ math.cos(a),  math.sin(a), 0], \
+                         [ math.sin(a), -math.cos(a), 0], \
+                         [           0,            0, 1]])
+        
+    # transforms to H, delta to alpha, delta
+    def Horizon_T_Equatorial(self, ST):
+        a = math.radians(ST)
+        return np.array([[ math.cos(a),  math.sin(a), 0], \
+                         [ math.sin(a), -math.cos(a), 0], \
+                         [           0,            0, 1]])
+
+    # transform alpha, delta to l, b
+    def Galactic_T_Equatorial(self):
+        return np.array([[-0.0669887, -0.8727558, -0.4835389], \
+                         [ 0.4927285, -0.4503470,  0.7445846], \
+                         [-0.8676008, -0.1883746,  0.4601998]])
+
+    # transform l, b to alpha, delta
+    def Equatorial_T_Galactic(self):
+        return np.array([[-0.0669888,  0.4927285, -0.8676008], \
+                         [-0.8727557, -0.4503469, -0.1883746], \
+                         [-0.4835389,  0.7445846,  0.4601998]])
+
+    def To_Vector(self, a, b):
+        u = math.radians(a)
+        v = math.radians(b)
+
+        return np.array([math.cos(u) * math.cos(v), math.sin(u) * math.cos(v), math.sin(v)])
+
+    def From_Vector(self, v):
+        theta = math.degrees(math.atan(v[1], v[0]))
+        psi   = math.degrees(math.sin(v[2]))
+
+        return theta, psi
