@@ -243,5 +243,19 @@ class TestCoordinates(Common):
 
         self.assertTuplesAlmostEqual(ac.DecToDMS(ac.AngleBetweenObjects(a_lat_degs, a_lon_hours, b_lat_degs, b_lon_hours)), (23, 40, 25.8579))
 
+    def test_RiseSetTime(self):
+        ac = astro_coordinates.Astro_Coordinates()
+        at = astro_time.Astro_Time()
+
+        right_ascension = at.HMSToDec(23, 39, 20)
+        declination     = ac.DMSToDec(21, 42,  0)
+        geo_latitude    = 30
+        geo_longitude   = 64
+        greenwich_year  = 2010
+        greenwich_month = 8
+        greenwhich_day  = 24
+
+        ac.RiseSetTime(right_ascension, declination, geo_latitude, geo_longitude, greenwich_year, greenwich_month, greenwhich_day)
+
 if __name__ == '__main__':
     unittest.main()

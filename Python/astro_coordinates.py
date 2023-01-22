@@ -214,3 +214,30 @@ class Astro_Coordinates:
         d_degs = math.degrees(d_rads)
 
         return d_degs
+
+    def VerticalShiftDegs(self):
+        return 0.5667 # degrees, constant for now
+
+    def RiseSetTime(self, right_ascension, declination, geo_latitude_degs, geo_longitude_degs, greenwich_year, greenwich_month, greenwhich_day):
+        declination_rads       = math.radians(declination)
+        vertical_shift_rads    = math.radians(self.VerticalShiftDegs())
+        geo_latitude_degs_rads = math.radians(geo_latitude_degs)
+
+        cos_H = -(math.sin(vertical_shift_rads) + math.sin(geo_latitude_degs_rads) * math.sin(declination_rads)) / (math.cos(geo_latitude_degs_rads) * math.cos(declination_rads))
+        
+        if cos_H >= -1.0 and cos_H <= 1.0:
+            H = math.degrees(math.acos(cos_H)) / 15
+            
+            cos_Ar = (math.sin(declination_rads) + math.sin(vertical_shift_rads) * math.sin(geo_latitude_degs_rads)) / (math.cos(vertical_shift_rads) * math.cos(geo_latitude_degs_rads))
+
+            Ar = math.degrees(math.acos(cos_Ar)) % 360
+
+            at = astro_time.Astro_Time()
+
+            local_sidereal_time_dec = (right_ascension - H) % 24
+            local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second = at.DecToHMS(local_sidereal_time_dec)
+            greenwich_sidereal_hour, greenwich_sidereal_minute, greenwich_sidereal_second = at.LocalSiderealTimeToGreenwichSiderealTime(local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second, geo_longitude_degs)
+            
+            ok, universal_time_hours, universal_time_minutes, universal_time_seconds = at.GreenwichSiderealTimeToUniversalTime(greenwich_year, greenwich_month, greenwhich_day, greenwich_sidereal_hour, greenwich_sidereal_minute, greenwich_sidereal_second)
+
+        return 0
