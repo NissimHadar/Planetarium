@@ -8,16 +8,19 @@ class Astro_Coordinates:
         A = np.array([[1, 2, 3], [3, 4, 5]])
    
     def DMSToDec(self, degrees, minutes, seconds):
-        return degrees + minutes / 60.0 + seconds / 3600.0
+        if degrees >= 0:
+            return degrees + minutes / 60.0 + seconds / 3600.0
+        else:
+            return degrees - minutes / 60.0 - seconds / 3600.0
 
     def DecToDMS(self, angle):
         degrees = math.trunc(angle)
-        degrees_fraction = angle - degrees
+        degrees_decion = angle - degrees
 
-        minutes = math.trunc(degrees_fraction * 60)
-        minutes_fraction = degrees_fraction - minutes / 60
+        minutes = math.trunc(degrees_decion * 60)
+        minutes_decion = degrees_decion - minutes / 60
 
-        seconds = minutes_fraction * 3600
+        seconds = minutes_decion * 3600
         if seconds >= 59.99:
             seconds  = 0.0
             minutes += 1
@@ -39,21 +42,21 @@ class Astro_Coordinates:
         at = astro_time.Astro_Time()
 
         universal_time          = at.LocalTimeToUniversalTime(local_year, local_month, local_day, local_hour, local_minute, local_second, daylight_savings, zone_correction)
-        universal_time_fraction = at.HMSToDec(universal_time[3], universal_time[4], universal_time[5])
+        universal_time_decion = at.HMSToDec(universal_time[3], universal_time[4], universal_time[5])
 
         Greenwich_year  = universal_time[0]
         Greenwich_month = universal_time[1]
         Greenwich_day   = universal_time[2]
 
-        Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second = at.UniversalTimeToGreenwichSiderealTime(Greenwich_year, Greenwich_month, Greenwich_day, universal_time_fraction, 0, 0)
-        Greenwich_sidereal_time_fraction = at.HMSToDec(Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second)
+        Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second = at.UniversalTimeToGreenwichSiderealTime(Greenwich_year, Greenwich_month, Greenwich_day, universal_time_decion, 0, 0)
+        Greenwich_sidereal_time_decion = at.HMSToDec(Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second)
 
-        local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second = at.GreenwichSiderealTimeToLocalSiderealTime(Greenwich_sidereal_time_fraction, 0, 0, longitude)
-        local_sidereal_time_fraction = at.HMSToDec(local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second)
+        local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second = at.GreenwichSiderealTimeToLocalSiderealTime(Greenwich_sidereal_time_decion, 0, 0, longitude)
+        local_sidereal_time_decion = at.HMSToDec(local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second)
         
         right_ascension = self.DMSToDec(ra_hour, ra_minute, ra_second)
 
-        hour_angle = (local_sidereal_time_fraction - right_ascension) % 24
+        hour_angle = (local_sidereal_time_decion - right_ascension) % 24
 
         return at.DecToHMS(hour_angle)
 
@@ -66,21 +69,21 @@ class Astro_Coordinates:
         at = astro_time.Astro_Time()
 
         universal_time          = at.LocalTimeToUniversalTime(local_year, local_month, local_day, local_hour, local_minute, local_second, daylight_savings, zone_correction)
-        universal_time_fraction = at.HMSToDec(universal_time[3], universal_time[4], universal_time[5])
+        universal_time_decion = at.HMSToDec(universal_time[3], universal_time[4], universal_time[5])
 
         Greenwich_year  = universal_time[0]
         Greenwich_month = universal_time[1]
         Greenwich_day   = universal_time[2]
 
-        Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second = at.UniversalTimeToGreenwichSiderealTime(Greenwich_year, Greenwich_month, Greenwich_day, universal_time_fraction, 0, 0)
-        Greenwich_sidereal_time_fraction = at.HMSToDec(Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second)
+        Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second = at.UniversalTimeToGreenwichSiderealTime(Greenwich_year, Greenwich_month, Greenwich_day, universal_time_decion, 0, 0)
+        Greenwich_sidereal_time_decion = at.HMSToDec(Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second)
 
-        local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second = at.GreenwichSiderealTimeToLocalSiderealTime(Greenwich_sidereal_time_fraction, 0, 0, longitude)
-        local_sidereal_time_fraction = at.HMSToDec(local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second)
+        local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second = at.GreenwichSiderealTimeToLocalSiderealTime(Greenwich_sidereal_time_decion, 0, 0, longitude)
+        local_sidereal_time_decion = at.HMSToDec(local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second)
 
-        hour_angle_fractions = at.HMSToDec(hour_angle_hours, hour_angle_minutes, hour_angle_seconds)
+        hour_angle_decions = at.HMSToDec(hour_angle_hours, hour_angle_minutes, hour_angle_seconds)
 
-        right_ascension = (local_sidereal_time_fraction - hour_angle_fractions) % 24
+        right_ascension = (local_sidereal_time_decion - hour_angle_decions) % 24
 
         return at.DecToHMS(right_ascension)
     
@@ -108,33 +111,48 @@ class Astro_Coordinates:
     #   st      - local sidereal time
     #   epsilon - obliquity of the ecliptic
 
-    # transforms to alpha, A to H, delta
-    def Equatorial_T_Horizon(self, phi):
-        a = math.radians(phi)
-        return np.array([[-math.sin(a),  0, math.cos(a)], \
-                         [           0, -1,           0], \
-                         [ math.cos(a),   0, math.sin(a)]])
-
-    # transforms to H, delta to alpha, A
-    def Horizon_T_Equatorial(self, phi):
+    # transforms from alpha, A to H, delta
+    def Equatorial_T_Horizon_lat(self, phi):
         a = math.radians(phi)
         return np.array([[-math.sin(a),  0, math.cos(a)], \
                          [           0, -1,           0], \
                          [ math.cos(a),  0, math.sin(a)]])
 
-    # transforms to alpha, delta to H, delta
-    def Equatorial_T_Horizon(self, ST):
+    # transforms from H, delta to alpha, A
+    def Horizon_T_Equatorial_lat(self, phi):
+        a = math.radians(phi)
+        return np.array([[-math.sin(a),  0, math.cos(a)], \
+                         [           0, -1,           0], \
+                         [ math.cos(a),  0, math.sin(a)]])
+
+    # transforms from alpha, delta to H, delta
+    def Equatorial_T_Horizon_ST(self, ST):
         a = math.radians(ST)
         return np.array([[ math.cos(a),  math.sin(a), 0], \
                          [ math.sin(a), -math.cos(a), 0], \
                          [           0,            0, 1]])
         
-    # transforms to H, delta to alpha, delta
-    def Horizon_T_Equatorial(self, ST):
+    # transforms from H, delta to alpha, delta
+    def Horizon_T_Equatorial_ST(self, ST):
         a = math.radians(ST)
         return np.array([[ math.cos(a),  math.sin(a), 0], \
                          [ math.sin(a), -math.cos(a), 0], \
                          [           0,            0, 1]])
+
+    # transforms from alpha, delta to gamma, beta
+    def Ecliptic_T_Equatorial(self, epsilon):
+        a = math.radians(epsilon)
+        return np.array([[ 1,           0,           0], \
+                         [ 0,  math.cos(a), math.sin(a)], \
+                         [ 0, -math.sin(a), math.cos(a)]])
+
+    # transforms from gamma, beta to alpha, delta
+    def Equatorial_T_Ecliptic(self, epsilon):
+        a = math.radians(epsilon)
+        return np.array([[ 1,           0,            0], \
+                         [ 0, math.cos(a), -math.sin(a)], \
+                         [ 0, math.sin(a),  math.cos(a)]])
+
 
     # transform alpha, delta to l, b
     def Galactic_T_Equatorial(self):
@@ -155,7 +173,31 @@ class Astro_Coordinates:
         return np.array([math.cos(u) * math.cos(v), math.sin(u) * math.cos(v), math.sin(v)])
 
     def From_Vector(self, v):
-        theta = math.degrees(math.atan(v[1], v[0]))
-        psi   = math.degrees(math.sin(v[2]))
+        theta = math.degrees(math.atan2(v[1], v[0]))
+        psi   = math.degrees(math.asin(v[2]))
 
         return theta, psi
+
+    def ConvertEclipticToHorizonCoordinates(self, \
+        obliquity, \
+        ecliptic_latitude, ecliptic_longitude, \
+        earth_latitude, local_sidereal_time_hours):
+
+        v = self.To_Vector(ecliptic_longitude, ecliptic_latitude)
+
+        equatorial_T_ecliptic = self.Equatorial_T_Ecliptic(obliquity)
+
+        local_sidereal_time_degs = local_sidereal_time_hours * 15
+        horizon_T_equatorial = self.Horizon_T_Equatorial_ST(local_sidereal_time_degs)
+
+        horizon_T_ecliptic = np.dot(horizon_T_equatorial, equatorial_T_ecliptic)
+
+        equatorial_T_horizon = self.Equatorial_T_Horizon_lat(earth_latitude)
+
+        equatorial_T_ecliptic = np.dot(equatorial_T_horizon, horizon_T_ecliptic)
+
+        w = np.dot(equatorial_T_ecliptic, v)
+
+        A, a = self.From_Vector(w)
+
+        return A, a

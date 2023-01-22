@@ -133,12 +133,12 @@ class Astro_Time:
 
     def DecToHMS(self, time):
         hour = math.trunc(time)
-        hour_fraction = time - hour
+        hour_dec = time - hour
 
-        minute = math.trunc(hour_fraction * 60)
-        minute_fraction = hour_fraction - minute / 60
+        minute = math.trunc(hour_dec * 60)
+        minute_dec = hour_dec - minute / 60
 
-        second = minute_fraction * 3600
+        second = minute_dec * 3600
         if second >= 59.99:
             second  = 0.0
             minute += 1
@@ -158,10 +158,10 @@ class Astro_Time:
         universal_time = local_civil_time - daylight_savings - zone_correction
 
         Julian_date = self.CalendarDateToJulianDate(year, month, universal_time / 24 + day)
-        Greenwich_year, Greenwich_month, Greenwich_day_fraction = self.JulianDateToCalendarDate(Julian_date)
+        Greenwich_year, Greenwich_month, Greenwich_day_dec = self.JulianDateToCalendarDate(Julian_date)
 
-        Greenwich_day = math.trunc(Greenwich_day_fraction)
-        decimal_time  = 24 * (Greenwich_day_fraction - Greenwich_day)
+        Greenwich_day = math.trunc(Greenwich_day_dec)
+        decimal_time  = 24 * (Greenwich_day_dec - Greenwich_day)
         hour, minute, second = self.DecToHMS(decimal_time)
 
         return Greenwich_year, Greenwich_month, Greenwich_day, hour, minute, second
@@ -172,10 +172,10 @@ class Astro_Time:
         local_time     = zone_time + daylight_savings
         Julian_day     = self.CalendarDateToJulianDate(year, month, day) + local_time / 24
 
-        local_year, local_month, local_day_fraction = self.JulianDateToCalendarDate(Julian_day)
-        local_day = math.trunc(local_day_fraction)
+        local_year, local_month, local_day_dec = self.JulianDateToCalendarDate(Julian_day)
+        local_day = math.trunc(local_day_dec)
         
-        local_time = 24 * (local_day_fraction - local_day)
+        local_time = 24 * (local_day_dec - local_day)
         local_hour, local_minute, local_second = self.DecToHMS(local_time)
 
         return local_year, local_month, local_day, local_hour, local_minute, local_second
@@ -202,8 +202,8 @@ class Astro_Time:
 
         t0 = (6.697374558 + (2400.051336 * t) + (0.000025862 * t * t)) % 24
 
-        Greenwich_sidereal_time_hour_fraction = self.HMSToDec(Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second)
-        a = Greenwich_sidereal_time_hour_fraction - t0
+        Greenwich_sidereal_time_hour_dec = self.HMSToDec(Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second)
+        a = Greenwich_sidereal_time_hour_dec - t0
         b = a % 24
 
         universal_time = b * 0.9972695663
@@ -215,19 +215,19 @@ class Astro_Time:
         return ok, universal_time_hours, universal_time_minutes, universal_time_seconds
 
     def GreenwichSiderealTimeToLocalSiderealTime(self, Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second, longitude):
-        Greenwich_sidereal_time_hour_fraction = self.HMSToDec(Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second)
+        Greenwich_sidereal_time_hour_dec = self.HMSToDec(Greenwich_sidereal_time_hour, Greenwich_sidereal_time_minute, Greenwich_sidereal_time_second)
 
         offset = longitude / 15
 
-        local_sidereal_time_hour_fraction = (Greenwich_sidereal_time_hour_fraction + offset) % 24
+        local_sidereal_time_hour_dec = (Greenwich_sidereal_time_hour_dec + offset) % 24
 
-        return self.DecToHMS(local_sidereal_time_hour_fraction)
+        return self.DecToHMS(local_sidereal_time_hour_dec)
         
     def LocalSiderealTimeToGreenwichSiderealTime(self, local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second, longitude):
-        local_sidereal_time_hour_fraction = self.HMSToDec(local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second)
+        local_sidereal_time_hour_dec = self.HMSToDec(local_sidereal_time_hour, local_sidereal_time_minute, local_sidereal_time_second)
 
         offset = longitude / 15
 
-        Greenwich_sidereal_time_hour_fraction = (local_sidereal_time_hour_fraction - offset) % 24
+        Greenwich_sidereal_time_hour_dec = (local_sidereal_time_hour_dec - offset) % 24
 
-        return self.DecToHMS(Greenwich_sidereal_time_hour_fraction)
+        return self.DecToHMS(Greenwich_sidereal_time_hour_dec)

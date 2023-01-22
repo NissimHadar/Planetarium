@@ -165,8 +165,10 @@ class TestCoordinates(Common):
     def test_DMSToDec(self):
         ac = astro_coordinates.Astro_Coordinates()
 
-        self.assertEqual(ac.DMSToDec(11, 30,  0), 11.5)
-        self.assertEqual(ac.DMSToDec(19, 31, 27), 19.524166666666666)
+        self.assertAlmostEqual(ac.DMSToDec( 11, 30,  0    ),  11.5)
+        self.assertAlmostEqual(ac.DMSToDec( 19, 31, 27    ),  19.524166666666666)
+        self.assertAlmostEqual(ac.DMSToDec( 17, 51, 28.688),  17.85796888)
+        self.assertAlmostEqual(ac.DMSToDec(-17, 51, 28.688), -17.85796888)
 
     def test_DecToDMS(self):
         ac = astro_coordinates.Astro_Coordinates()
@@ -204,6 +206,28 @@ class TestCoordinates(Common):
         self.assertTupleAlmostEqual(ac.To_Vector( 0, 270), (  0,     0,    -1    ))
         self.assertTupleAlmostEqual(ac.To_Vector( 0, 315), (  0.707, 0,    -0.707))
         self.assertTupleAlmostEqual(ac.To_Vector( 0, 360), ( 1,      0,     0    ))
+
+    def test_ConvertEclipticToHorizonCoordinates(self):
+        ac = astro_coordinates.Astro_Coordinates()
+        at = astro_time.Astro_Time()
+
+        obliquity = ac.DMSToDec(23, 26, 46.45)
+
+        planet_ecliptic_latitude  = ac.DMSToDec(-17, 51, 28.688)
+        planet_ecliptic_longitude = ac.DMSToDec( 97, 38, 17.228)
+        
+        earth_latitude = ac.DMSToDec(52, 10, 31)
+        
+        local_sidereal_time_hours = at.HMSToDec(5, 9, 21.103)
+
+        expected_azimuth  = ac.DMSToDec(153, 29, 31)
+        expected_altitude = ac.DMSToDec( 40, 23, 58)
+
+        actual_azimuth, actual_altitude = ac.ConvertEclipticToHorizonCoordinates(\
+            obliquity, \
+            planet_ecliptic_latitude, planet_ecliptic_longitude, \
+            earth_latitude, local_sidereal_time_hours)
+        self.assertTupleAlmostEqual((actual_azimuth, actual_altitude), (expected_azimuth, expected_altitude))
 
 if __name__ == '__main__':
     unittest.main()
