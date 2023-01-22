@@ -129,7 +129,10 @@ class Astro_Time:
         return math.floor((A - math.floor(A)) *  7 + 0.5)
 
     def HMSToDec(self, hour, minute, second):
-        return hour + minute / 60.0 + second / 3600.0
+        if hour >= 0 or hour == 0 and minute >= 0:
+            return hour + minute / 60.0 + second / 3600.0
+        else:
+            return hour - minute / 60.0 - second / 3600.0
 
     def DecToHMS(self, time):
         hour = math.trunc(time)

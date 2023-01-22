@@ -8,7 +8,7 @@ class Astro_Coordinates:
         A = np.array([[1, 2, 3], [3, 4, 5]])
    
     def DMSToDec(self, degrees, minutes, seconds):
-        if degrees >= 0:
+        if degrees >= 0 or degrees == 0 and minutes >= 0:
             return degrees + minutes / 60.0 + seconds / 3600.0
         else:
             return degrees - minutes / 60.0 - seconds / 3600.0
@@ -201,3 +201,16 @@ class Astro_Coordinates:
         A, a = self.From_Vector(w)
 
         return A, a
+
+    def AngleBetweenObjects(self, a_lat_degs, a_lon_hours, b_lat_degs, b_lon_hours):
+
+        a_lat = math.radians(a_lat_degs)
+        a_lon = math.radians(a_lon_hours * 15)
+        b_lat = math.radians(b_lat_degs)
+        b_lon = math.radians(b_lon_hours * 15)
+
+        cos_d_rads = math.sin(a_lat) * math.sin(b_lat) + math.cos(a_lat) * math.cos(b_lat) * math.cos(a_lon - b_lon)
+        d_rads = math.acos(cos_d_rads)
+        d_degs = math.degrees(d_rads)
+
+        return d_degs

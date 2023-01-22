@@ -4,7 +4,7 @@ import astro_time
 import astro_coordinates
 
 class Common(unittest.TestCase):
-    def assertTupleAlmostEqual(self, a, b):
+    def assertTuplesAlmostEqual(self, a, b):
         if len(a) != len(b):
             return False
 
@@ -117,49 +117,51 @@ class TestTime(Common):
     def test_HMSToDec(self):
         at = astro_time.Astro_Time()
 
-        self.assertEqual(at.HMSToDec(11, 30,  0), 11.5)
-        self.assertEqual(at.HMSToDec(19, 31, 27), 19.524166666666666)
+        self.assertAlmostEqual(at.HMSToDec( 11, 30,  0    ),  11.5       )
+        self.assertAlmostEqual(at.HMSToDec( 19, 31, 27    ),  19.52416666)
+        self.assertAlmostEqual(at.HMSToDec( 17, 51, 28.688),  17.85796888)
+        self.assertAlmostEqual(at.HMSToDec(-17, 51, 28.688), -17.85796888)
 
     def test_DecToHMS(self):
         at = astro_time.Astro_Time()
 
-        self.assertTupleAlmostEqual(at.DecToHMS(11.5),               (11, 30,  0))
-        self.assertTupleAlmostEqual(at.DecToHMS(19.524166666666666), (19, 31, 27))
-        self.assertTupleAlmostEqual(at.DecToHMS(at.HMSToDec( 1,  2,  3)), ( 1,  2,  3))
-        self.assertTupleAlmostEqual(at.DecToHMS(at.HMSToDec( 4,  6,  9)), ( 4,  6,  9))
-        self.assertTupleAlmostEqual(at.DecToHMS(at.HMSToDec( 7, 12, 33)), ( 7, 12, 33))
-        self.assertTupleAlmostEqual(at.DecToHMS(at.HMSToDec(16, 45, 45)), (16, 45, 45))
+        self.assertTuplesAlmostEqual(at.DecToHMS(11.5),               (11, 30,  0))
+        self.assertTuplesAlmostEqual(at.DecToHMS(19.524166666666666), (19, 31, 27))
+        self.assertTuplesAlmostEqual(at.DecToHMS(at.HMSToDec( 1,  2,  3)), ( 1,  2,  3))
+        self.assertTuplesAlmostEqual(at.DecToHMS(at.HMSToDec( 4,  6,  9)), ( 4,  6,  9))
+        self.assertTuplesAlmostEqual(at.DecToHMS(at.HMSToDec( 7, 12, 33)), ( 7, 12, 33))
+        self.assertTuplesAlmostEqual(at.DecToHMS(at.HMSToDec(16, 45, 45)), (16, 45, 45))
 
     def test_LocalTimeToUniversalTime(self):
         at = astro_time.Astro_Time()
 
-        self.assertTupleAlmostEqual(at.LocalTimeToUniversalTime(2013, 7, 1, 3, 37, 0, 1, 4), (2013, 6, 30, 22, 37, 0))
+        self.assertTuplesAlmostEqual(at.LocalTimeToUniversalTime(2013, 7, 1, 3, 37, 0, 1, 4), (2013, 6, 30, 22, 37, 0))
 
     def test_UniversalTimeToLocalTime(self):
         at = astro_time.Astro_Time()
 
-        self.assertTupleAlmostEqual(at.UniversalTimeToLocalTime(2013, 6, 30, 22, 37, 0, 1, 4), (2013, 7, 1, 3, 37, 0))
+        self.assertTuplesAlmostEqual(at.UniversalTimeToLocalTime(2013, 6, 30, 22, 37, 0, 1, 4), (2013, 7, 1, 3, 37, 0))
 
 
     def test_UniversalTimeToGreenwichSiderealTime(self):
         at = astro_time.Astro_Time()
 
-        self.assertTupleAlmostEqual(at.UniversalTimeToGreenwichSiderealTime(1980, 4, 22, 14, 36, 51.67), (4, 40, 5.23))
+        self.assertTuplesAlmostEqual(at.UniversalTimeToGreenwichSiderealTime(1980, 4, 22, 14, 36, 51.67), (4, 40, 5.23))
 
     def test_GreenwichSiderealTimeToUniversalTime(self):
         at = astro_time.Astro_Time()
 
-        self.assertTupleAlmostEqual(at.GreenwichSiderealTimeToUniversalTime(1980, 4, 22, 4, 40, 5.23), (14, 36, 51.67))
+        self.assertTuplesAlmostEqual(at.GreenwichSiderealTimeToUniversalTime(1980, 4, 22, 4, 40, 5.23), (14, 36, 51.67))
 
     def test_GreenwichSiderealTimeToLocalSiderealTime(self):
         at = astro_time.Astro_Time()
 
-        self.assertTupleAlmostEqual(at.GreenwichSiderealTimeToLocalSiderealTime(4, 40, 5.23, -64), (0, 24, 5.23))
+        self.assertTuplesAlmostEqual(at.GreenwichSiderealTimeToLocalSiderealTime(4, 40, 5.23, -64), (0, 24, 5.23))
 
     def test_LocalSiderealTimeToGreenwichSiderealTime(self):
         at = astro_time.Astro_Time()
 
-        self.assertTupleAlmostEqual(at.LocalSiderealTimeToGreenwichSiderealTime(0, 24, 5.23, -64), (4, 40, 5.23))
+        self.assertTuplesAlmostEqual(at.LocalSiderealTimeToGreenwichSiderealTime(0, 24, 5.23, -64), (4, 40, 5.23))
 
 class TestCoordinates(Common):
     def test_DMSToDec(self):
@@ -173,39 +175,39 @@ class TestCoordinates(Common):
     def test_DecToDMS(self):
         ac = astro_coordinates.Astro_Coordinates()
 
-        self.assertTupleAlmostEqual(ac.DecToDMS(11.5), (11, 30,  0))
-        self.assertTupleAlmostEqual(ac.DecToDMS(182.5241667), (182, 31, 27))
+        self.assertTuplesAlmostEqual(ac.DecToDMS(11.5), (11, 30,  0))
+        self.assertTuplesAlmostEqual(ac.DecToDMS(182.5241667), (182, 31, 27))
 
     def test_RightAscensionToHourAngle(self):
         ac = astro_coordinates.Astro_Coordinates()
 
-        self.assertTupleAlmostEqual(ac.RightAscensionToHourAngle(18, 32, 21, 1980, 4, 22, 14, 36, 51.67, 0, -4, -64), (9, 52, 23.6555))
+        self.assertTuplesAlmostEqual(ac.RightAscensionToHourAngle(18, 32, 21, 1980, 4, 22, 14, 36, 51.67, 0, -4, -64), (9, 52, 23.6555))
 
     def test_HourAngleToRightAscension(self):
         ac = astro_coordinates.Astro_Coordinates()
 
-        self.assertTupleAlmostEqual(ac.HourAngleToRightAscension(9, 52, 23.6555, 1980, 4, 22, 14, 36, 51.67, 0, -4, -64), (18, 32, 21))
+        self.assertTuplesAlmostEqual(ac.HourAngleToRightAscension(9, 52, 23.6555, 1980, 4, 22, 14, 36, 51.67, 0, -4, -64), (18, 32, 21))
 
     def test_ToFromVector(self):
         ac = astro_coordinates.Astro_Coordinates()
 
-        self.assertTupleAlmostEqual(ac.To_Vector(  0,  0), ( 1,      0,     0    ))
-        self.assertTupleAlmostEqual(ac.To_Vector( 45,  0), ( 0.707,  0.707, 0    ))
-        self.assertTupleAlmostEqual(ac.To_Vector( 90,  0), ( 0,      1,     0    ))
-        self.assertTupleAlmostEqual(ac.To_Vector(135,  0), (-0.707,  0.707, 0    ))
-        self.assertTupleAlmostEqual(ac.To_Vector(180,  0), (-1,      0,     0    ))
-        self.assertTupleAlmostEqual(ac.To_Vector(225,  0), (-0.707, -0.707, 0    ))
-        self.assertTupleAlmostEqual(ac.To_Vector(270,  0), ( 0,     -1,     0    ))
-        self.assertTupleAlmostEqual(ac.To_Vector(360,  0), ( 1,      0,     0    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector(  0,  0), ( 1,      0,     0    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector( 45,  0), ( 0.707,  0.707, 0    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector( 90,  0), ( 0,      1,     0    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector(135,  0), (-0.707,  0.707, 0    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector(180,  0), (-1,      0,     0    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector(225,  0), (-0.707, -0.707, 0    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector(270,  0), ( 0,     -1,     0    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector(360,  0), ( 1,      0,     0    ))
 
-        self.assertTupleAlmostEqual(ac.To_Vector( 0,  45), (  0.707, 0,     0.707))
-        self.assertTupleAlmostEqual(ac.To_Vector( 0,  90), (  0,     0,     1    ))
-        self.assertTupleAlmostEqual(ac.To_Vector( 0, 135), ( -0.707, 0,     0.707))
-        self.assertTupleAlmostEqual(ac.To_Vector( 0, 180), (  -1,    0,     0    ))
-        self.assertTupleAlmostEqual(ac.To_Vector( 0, 225), ( -0.707, 0,    -0.707))
-        self.assertTupleAlmostEqual(ac.To_Vector( 0, 270), (  0,     0,    -1    ))
-        self.assertTupleAlmostEqual(ac.To_Vector( 0, 315), (  0.707, 0,    -0.707))
-        self.assertTupleAlmostEqual(ac.To_Vector( 0, 360), ( 1,      0,     0    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector( 0,  45), (  0.707, 0,     0.707))
+        self.assertTuplesAlmostEqual(ac.To_Vector( 0,  90), (  0,     0,     1    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector( 0, 135), ( -0.707, 0,     0.707))
+        self.assertTuplesAlmostEqual(ac.To_Vector( 0, 180), (  -1,    0,     0    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector( 0, 225), ( -0.707, 0,    -0.707))
+        self.assertTuplesAlmostEqual(ac.To_Vector( 0, 270), (  0,     0,    -1    ))
+        self.assertTuplesAlmostEqual(ac.To_Vector( 0, 315), (  0.707, 0,    -0.707))
+        self.assertTuplesAlmostEqual(ac.To_Vector( 0, 360), ( 1,      0,     0    ))
 
     def test_ConvertEclipticToHorizonCoordinates(self):
         ac = astro_coordinates.Astro_Coordinates()
@@ -227,7 +229,19 @@ class TestCoordinates(Common):
             obliquity, \
             planet_ecliptic_latitude, planet_ecliptic_longitude, \
             earth_latitude, local_sidereal_time_hours)
-        self.assertTupleAlmostEqual((actual_azimuth, actual_altitude), (expected_azimuth, expected_altitude))
+
+        self.assertTuplesAlmostEqual((actual_azimuth, actual_altitude), (expected_azimuth, expected_altitude))
+
+    def test_AngleBetweenObjects(self):
+        ac = astro_coordinates.Astro_Coordinates()
+        at = astro_time.Astro_Time()
+
+        a_lat_degs  = ac.DMSToDec( -8, 13, 30  ) # beta Orion
+        a_lon_hours = at.HMSToDec(  5, 13, 31.7)
+        b_lat_degs  = ac.DMSToDec(-16, 41, 11  ) # alpha Canis Majoris
+        b_lon_hours = at.HMSToDec(  6, 44, 13.4)
+
+        self.assertTuplesAlmostEqual(ac.DecToDMS(ac.AngleBetweenObjects(a_lat_degs, a_lon_hours, b_lat_degs, b_lon_hours)), (23, 40, 25.8579))
 
 if __name__ == '__main__':
     unittest.main()
