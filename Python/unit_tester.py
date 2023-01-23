@@ -255,7 +255,11 @@ class TestCoordinates(Common):
         greenwich_month = 8
         greenwhich_day  = 24
 
-        ac.RiseSetTime(right_ascension, declination, geo_latitude, geo_longitude, greenwich_year, greenwich_month, greenwhich_day)
+        rise_time = ac.RiseTime(right_ascension, declination, geo_latitude, geo_longitude, greenwich_year, greenwich_month, greenwhich_day)
+        self.assertTuplesAlmostEqual(rise_time, (14, 16, 18.0116, 64.3623))
+
+        set_time = ac.SetTime(right_ascension, declination, geo_latitude, geo_longitude, greenwich_year, greenwich_month, greenwhich_day)
+        self.assertTuplesAlmostEqual(rise_time, (4, 10, 1.1645, 295.637652))
 
 if __name__ == '__main__':
     unittest.main()
