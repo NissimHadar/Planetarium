@@ -6,7 +6,7 @@ import astro_coordinates
 class Common(unittest.TestCase):
     def assertTuplesAlmostEqual(self, a, b):
         if len(a) != len(b):
-            return False
+            self.assertTrue(False)
 
         for i in range(len(a)):
             self.assertAlmostEqual(a[i], b[i], 2)
@@ -151,7 +151,7 @@ class TestTime(Common):
     def test_GreenwichSiderealTimeToUniversalTime(self):
         at = astro_time.Astro_Time()
 
-        self.assertTuplesAlmostEqual(at.GreenwichSiderealTimeToUniversalTime(1980, 4, 22, 4, 40, 5.23), (14, 36, 51.67))
+        self.assertTuplesAlmostEqual(at.GreenwichSiderealTimeToUniversalTime(1980, 4, 22, 4, 40, 5.23), (True, 14, 36, 51.67))
 
     def test_GreenwichSiderealTimeToLocalSiderealTime(self):
         at = astro_time.Astro_Time()
@@ -256,10 +256,26 @@ class TestCoordinates(Common):
         greenwhich_day  = 24
 
         rise_time = ac.RiseTime(right_ascension, declination, geo_latitude, geo_longitude, greenwich_year, greenwich_month, greenwhich_day)
-        self.assertTuplesAlmostEqual(rise_time, (14, 16, 18.0116, 64.3623))
+        self.assertTuplesAlmostEqual(rise_time[0], (True, 14, 16, 18.0116))
+        self.assertAlmostEqual(rise_time[1], 64.362348)
 
         set_time = ac.SetTime(right_ascension, declination, geo_latitude, geo_longitude, greenwich_year, greenwich_month, greenwhich_day)
-        self.assertTuplesAlmostEqual(rise_time, (4, 10, 1.1645, 295.637652))
+        self.assertTuplesAlmostEqual(set_time[0], (True, 4, 10, 1.1645302))
+        self.assertAlmostEqual(set_time[1], 295.637652)
+
+    def test_Pertubation(self):
+        ac = astro_coordinates.Astro_Coordinates()
+        at = astro_time.Astro_Time()
+
+        epoch_1         = 1950, 1, 0.923
+        epoch_2         = 1979, 6, 1
+
+        right_ascension_1 = at.HMSToDec(9, 10, 43)
+        declination_1     = ac.DMSToDec(14, 23, 25)
+
+        right_ascension_2, declination_2 = ac.Pertubation(epoch_1, epoch_2, right_ascension_1, declination_1)
+        self.assertTuplesAlmostEqual(right_ascension_2, (9, 12, 20.16))
+        self.assertTuplesAlmostEqual(declination_2, (14, 16, 7.7718))
 
 if __name__ == '__main__':
     unittest.main()

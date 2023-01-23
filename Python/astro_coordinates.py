@@ -236,7 +236,7 @@ class Astro_Coordinates:
             Ar = math.degrees(math.acos(cos_Ar)) % 360
         else:
             Ar = 360 - math.degrees(math.acos(cos_Ar)) % 360
-            
+
         at = astro_time.Astro_Time()
 
         if is_rise:
@@ -254,3 +254,43 @@ class Astro_Coordinates:
 
     def SetTime(self, right_ascension, declination, geo_latitude_degs, geo_longitude_degs, greenwich_year, greenwich_month, greenwhich_day):
         return self.__RiseOrSetTime(False, right_ascension, declination, geo_latitude_degs, geo_longitude_degs, greenwich_year, greenwich_month, greenwhich_day)
+
+    def __compute_P(self, epoch):
+        at = astro_time.Astro_Time()
+
+        julian_date = at.CalendarDateToJulianDate(epoch[0], epoch[1], epoch[2])
+
+        T = (julian_date - 2451545) / 36525
+
+        zeta_A  = 0.6406161 * T + 0.0000839 * T * T + 0.0000050 * T * T * T
+        z_A     = 0.6406161 * T + 0.0003041 * T * T + 0.0000051 * T * T * T
+        theta_A = 0.5567530 * T + 0.0001185 * T * T + 0.0000116 * T * T * T
+
+        cx = math.cos(math.radians(zeta_A))
+        sx = math.sin(math.radians(zeta_A))
+        cz = math.cos(math.radians(z_A))
+        sz = math.sin(math.radians(z_A))
+        ct = math.cos(math.radians(theta_A))
+        st = math.sin(math.radians(theta_A))
+
+        return np.array([[ cx * ct * cz - sx * sz,  cx * ct * sz + sx * cz,  cx * st],\
+                         [-sx * ct * cz - cx * sz, -sx * ct * sz + cx * cz, -sx * st],\
+                         [-st * cz,                -st * sz,                 ct]])
+
+    def Pertubation(self, epoch_1, epoch_2, right_ascension_1_hours, declination_1_degrees):
+        at = astro_time.Astro_Time()
+
+        right_ascension_1_degrees = right_ascension_1_hours * 15
+
+        v = self.To_Vector(right_ascension_1_degrees, declination_1_degrees)
+
+        P_tag = self.__compute_P(epoch_1)
+        P     = np.transpose(self.__compute_P(epoch_2))
+
+        s       = np.dot(P_tag, v)
+        m, n, p = np.dot(P,     s)
+
+        right_ascension_2_hours = at.DecToHMS(math.degrees(math.atan2(n, m)) / 15)
+        declination_2_degrees   = self.DecToDMS(math.degrees(math.asin(p)))
+
+        return right_ascension_2_hours, declination_2_degrees
