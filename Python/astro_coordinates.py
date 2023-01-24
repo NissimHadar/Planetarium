@@ -294,3 +294,21 @@ class Astro_Coordinates:
         declination_2_degrees   = self.DecToDMS(math.degrees(math.asin(p)))
 
         return right_ascension_2_hours, declination_2_degrees
+        
+    def Nutation_seconds(self, date):
+        at = astro_time.Astro_Time()
+
+        julian_date = at.CalendarDateToJulianDate(date[0], date[1], date[2])
+
+        T_centuries = (julian_date - 2415020) / 36525
+
+        A = 100.002136 * T_centuries
+        L_degrees = 279.6967 + 360 * (A - math.trunc(A))
+
+        B = 5.372617 * T_centuries
+        omega = 259.1833 - 360 * (B - math.trunc(B))
+
+        delta_lat_arcsec =   9.2 * math.cos(math.radians(omega)) + 0.5 * math.cos(math.radians(2 * L_degrees))
+        delta_lon_arcsec = -17.2 * math.sin(math.radians(omega)) - 1.3 * math.sin(math.radians(2 * L_degrees))
+
+        return delta_lat_arcsec, delta_lon_arcsec

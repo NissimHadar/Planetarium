@@ -277,5 +277,12 @@ class TestCoordinates(Common):
         self.assertTuplesAlmostEqual(right_ascension_2, (9, 12, 20.16))
         self.assertTuplesAlmostEqual(declination_2, (14, 16, 7.7718))
 
+    def test_Nutations_seconds(self):
+        ac = astro_coordinates.Astro_Coordinates()
+
+        date = 1988, 9, 1
+
+        self.assertTuplesAlmostEqual(ac.Nutation_seconds(date), (9.24156, 5.4929))
+
 if __name__ == '__main__':
     unittest.main()
