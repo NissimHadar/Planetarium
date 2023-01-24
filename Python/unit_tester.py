@@ -273,16 +273,22 @@ class TestCoordinates(Common):
         right_ascension_1 = at.HMSToDec(9, 10, 43)
         declination_1     = ac.DMSToDec(14, 23, 25)
 
-        right_ascension_2, declination_2 = ac.Pertubation(epoch_1, epoch_2, right_ascension_1, declination_1)
+        right_ascension_2, declination_2 = ac.Precession(epoch_1, epoch_2, right_ascension_1, declination_1)
         self.assertTuplesAlmostEqual(right_ascension_2, (9, 12, 20.16))
         self.assertTuplesAlmostEqual(declination_2, (14, 16, 7.7718))
 
-    def test_Nutations_seconds(self):
+    def test_Nutation_seconds(self):
         ac = astro_coordinates.Astro_Coordinates()
 
-        date = 1988, 9, 1
+        self.assertTuplesAlmostEqual(ac.Nutation_seconds((1988, 9, 1)), (9.24156, 5.4929))
 
-        self.assertTuplesAlmostEqual(ac.Nutation_seconds(date), (9.24156, 5.4929))
+    def test_Aberration_seconds(self):
+        ac = astro_coordinates.Astro_Coordinates()
+
+        ecliptic_lat_dec = ac.DMSToDec( -1, 32, 56.4)
+        ecliptic_lon_dec = ac.DMSToDec(352, 37, 10.1)
+
+        self.assertTuplesAlmostEqual(ac.Aberration_seconds(ecliptic_lat_dec, ecliptic_lon_dec), (0, 0))
 
 if __name__ == '__main__':
     unittest.main()

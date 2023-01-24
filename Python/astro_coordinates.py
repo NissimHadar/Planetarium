@@ -7,6 +7,7 @@ class Astro_Coordinates:
     def __init__(self):
         A = np.array([[1, 2, 3], [3, 4, 5]])
    
+    ### 21, page 39 
     def DMSToDec(self, degrees, minutes, seconds):
         if degrees >= 0 or degrees == 0 and minutes >= 0:
             return degrees + minutes / 60.0 + seconds / 3600.0
@@ -34,6 +35,7 @@ class Astro_Coordinates:
             
         return degrees, minutes, seconds
 
+    ### 24, page 43
     def RightAscensionToHourAngle(self, \
         ra_hour, ra_minute, ra_second, \
         local_year, local_month, local_day, local_hour, local_minute, local_second, daylight_savings, zone_correction, \
@@ -178,6 +180,7 @@ class Astro_Coordinates:
 
         return theta, psi
 
+    ### 31, page 60
     def ConvertEclipticToHorizonCoordinates(self, \
         obliquity, \
         ecliptic_latitude, ecliptic_longitude, \
@@ -202,6 +205,8 @@ class Astro_Coordinates:
 
         return A, a
 
+    
+    ### 32, page 66
     def AngleBetweenObjects(self, a_lat_degs, a_lon_hours, b_lat_degs, b_lon_hours):
 
         a_lat = math.radians(a_lat_degs)
@@ -218,6 +223,7 @@ class Astro_Coordinates:
     def VerticalShiftDegs(self):
         return 0.5667 # degrees, constant for now
 
+    ### 33, page 67
     def __RiseOrSetTime(self, is_rise, right_ascension, declination, geo_latitude_degs, geo_longitude_degs, greenwich_year, greenwich_month, greenwhich_day):
         declination_rads       = math.radians(declination)
         vertical_shift_rads    = math.radians(self.VerticalShiftDegs())
@@ -277,7 +283,8 @@ class Astro_Coordinates:
                          [-sx * ct * cz - cx * sz, -sx * ct * sz + cx * cz, -sx * st],\
                          [-st * cz,                -st * sz,                 ct]])
 
-    def Pertubation(self, epoch_1, epoch_2, right_ascension_1_hours, declination_1_degrees):
+    ### 34, page 71
+    def Precession(self, epoch_1, epoch_2, right_ascension_1_hours, declination_1_degrees):
         at = astro_time.Astro_Time()
 
         right_ascension_1_degrees = right_ascension_1_hours * 15
@@ -295,6 +302,7 @@ class Astro_Coordinates:
 
         return right_ascension_2_hours, declination_2_degrees
         
+    ### 35, page 76
     def Nutation_seconds(self, date):
         at = astro_time.Astro_Time()
 
@@ -308,7 +316,11 @@ class Astro_Coordinates:
         B = 5.372617 * T_centuries
         omega = 259.1833 - 360 * (B - math.trunc(B))
 
-        delta_lat_arcsec =   9.2 * math.cos(math.radians(omega)) + 0.5 * math.cos(math.radians(2 * L_degrees))
-        delta_lon_arcsec = -17.2 * math.sin(math.radians(omega)) - 1.3 * math.sin(math.radians(2 * L_degrees))
+        delta_ecliptic_lat_arcsec =   9.2 * math.cos(math.radians(omega)) + 0.5 * math.cos(math.radians(2 * L_degrees))
+        delta_ecliptic_lon_arcsec = -17.2 * math.sin(math.radians(omega)) - 1.3 * math.sin(math.radians(2 * L_degrees))
 
-        return delta_lat_arcsec, delta_lon_arcsec
+        return delta_ecliptic_lat_arcsec, delta_ecliptic_lon_arcsec
+
+    ### 36, page 78
+    def Aberration_seconds(self, ecliptic_lat_dec, ecliptic_lon_dec):
+        return 0, 0
